@@ -44,7 +44,7 @@
 ## 🚀 Quick Start
 
 ### Option 1: Use Online
-Visit our [live demo](#) to start generating secure passwords instantly.
+Visit our [live demo](https://smart-password-generator-red.vercel.app/) to start generating secure passwords instantly.
 
 ### Option 2: Local Development
 ```bash
