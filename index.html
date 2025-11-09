@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Password Generator | Secure & User-Educative</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="css/style.css?v=1.0.0" rel="stylesheet">
+</head>
+
+<body data-theme="dark">
+    <div class="container">
+        <button class="theme-toggle" id="themeToggle" title="Toggle dark/light mode">
+            <i class="fas fa-moon"></i>
+        </button>
+
+        <h2><i class="fas fa-lock me-2"></i>SmartPassword</h2>
+
+        <div class="result-container">
+            <input type="password" class="form-control password-field" id="passwordOutput" readonly>
+            <button class="btn" id="copyButton" title="Copy to clipboard">
+                <i class="far fa-clipboard"></i>
+            </button>
+        </div>
+
+        <div class="form-check">
+            <input class="form-check-input" type="checkbox" id="revealPassword">
+            <label class="form-check-label" for="revealPassword">Reveal</label>
+        </div>
+
+        <div class="strength-section">
+            <div class="strength-header">
+                <h5>Password Strength</h5>
+                <span id="strengthLabel" class="badge bg-secondary">Not generated</span>
+                <button class="btn btn-sm btn-outline" id="explainStrength" data-bs-toggle="modal"
+                    data-bs-target="#strengthModal">
+                    <i class="fas fa-question-circle"></i>
+                </button>
+            </div>
+            <div class="strength-meter">
+                <div class="strength-fill" id="strengthFill"></div>
+            </div>
+            <div class="debug-info" id="entropyInfo">Entropy: 0 bits</div>
+        </div>
+
+        <div class="settings">
+            <div class="setting">
+                <label>Password length</label>
+                <div class="slider-container">
+                    <input type="range" class="form-range" id="lengthSlider" min="8" max="128" value="16">
+                    <span class="slider-value" id="lengthValue">16</span>
+                </div>
+            </div>
+            <div class="setting">
+                <label>Include uppercase letters</label>
+                <input type="checkbox" id="uppercase" checked />
+            </div>
+            <div class="setting">
+                <label>Include lowercase letters</label>
+                <input type="checkbox" id="lowercase" checked />
+            </div>
+            <div class="setting">
+                <label>Include numbers</label>
+                <input type="checkbox" id="numbers" checked />
+            </div>
+            <div class="setting">
+                <label>Include symbols</label>
+                <input type="checkbox" id="symbols" checked />
+            </div>
+        </div>
+
+        <button class="btn btn-large" id="generateButton">
+            <i class="fas fa-key me-2"></i>Generate Password
+        </button>
+
+        <div class="d-flex gap-2 mt-3">
+            <button class="btn btn-outline flex-fill" id="makeStronger" disabled>
+                <i class="fas fa-shield-alt me-2"></i>Make Stronger
+            </button>
+            <div class="dropdown">
+                <button class="btn btn-outline dropdown-toggle" type="button" id="historyDropdown"
+                    data-bs-toggle="dropdown" aria-expanded="false" disabled>
+                    <i class="fas fa-history me-2"></i>History
+                </button>
+                <ul class="dropdown-menu history-dropdown" aria-labelledby="historyDropdown" id="historyList">
+                    <li><a class="dropdown-item" href="#">No history yet</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="container learn-section">
+        <h4><i class="fas fa-graduation-cap me-2"></i>Password Security Tips</h4>
+        <div class="row">
+            <div class="col-12">
+                <ul>
+                    <li>Use at least 12 characters for important accounts</li>
+                    <li>Include a mix of character types</li>
+                    <li>Avoid dictionary words and personal information</li>
+                    <li>Use a unique password for each account</li>
+                </ul>
+            </div>
+        </div>
+        <div class="text-center">
+            <a href="https://cheatsheetseries.owasp.org/cheatsheets/Authentication_Cheat_Sheet.html" target="_blank"
+                class="btn btn-sm btn-outline">
+                <i class="fas fa-external-link-alt me-1"></i> OWASP Guidelines
+            </a>
+        </div>
+    </div>
+
+    <!-- Toast for notifications -->
+    <div class="toast-container">
+        <div class="toast align-items-center" id="copyToast" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="d-flex">
+                <div class="toast-body">
+                    Password copied to clipboard!
+                </div>
+                <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Strength Explanation Modal -->
+    <div class="modal fade" id="strengthModal" tabindex="-1" aria-labelledby="strengthModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="strengthModalLabel">Password Strength Explained</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Password strength is calculated using <strong>entropy</strong>, which measures unpredictability.
+                    </p>
+                    <p>The formula used is: <code>E = L * log2(R)</code></p>
+                    <ul>
+                        <li><strong>L</strong> = Password length</li>
+                        <li><strong>R</strong> = Size of the character set used</li>
+                    </ul>
+                    <div class="mt-3">
+                        <h6>Strength Levels:</h6>
+                        <ul>
+                            <li><span class="text-danger">Weak</span> (0-40 bits): Easily crackable</li>
+                            <li><span class="text-warning">Fair</span> (40-60 bits): Moderate security</li>
+                            <li><span class="text-info">Good</span> (60-80 bits): Reasonable for most purposes</li>
+                            <li><span class="text-success">Strong</span> (80-100 bits): Very secure</li>
+                            <li><span class="text-success fw-bold">Very Strong</span> (100+ bits): Extremely secure</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Social Panel -->
+    <div class="social-panel-container">
+        <div class="social-panel">
+            <p>Created with <i class="fa fa-heart"></i> by
+                <a target="_blank" href="#">Mr 574rk</a>
+            </p>
+            <button class="close-btn"><i class="fas fa-times"></i></button>
+            <h4>Get in touch on</h4>
+            <ul>
+                <li>
+                    <a href="#" target="_blank">
+                        <i class="fab fa-github"></i>
+                    </a>
+                </li>
+                <li>
+                    <a href="#" target="_blank">
+                        <i class="fab fa-twitter"></i>
+                    </a>
+                </li>
+                <li>
+                    <a href="#" target="_blank">
+                        <i class="fab fa-linkedin"></i>
+                    </a>
+                </li>
+                <li>
+                    <a href="#" target="_blank">
+                        <i class="fab fa-instagram"></i>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <button class="floating-btn">
+        Get in Touch
+    </button>
+
+    <footer class="footer">
+        <div class="container">
+            <p>🔐 Smart Password Generator | Uses <code>window.crypto.getRandomValues()</code> for true randomness</p>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script src="js/script.js?v=1.0.0"></script>
+</body>
+
+</html>
