@@ -11,7 +11,7 @@
 
 ![Password Generator Demo](https://via.placeholder.com/800x400/4361ee/ffffff?text=Smart+Pass)
 
-[Live Demo](#) • [Report Bug](#) • [Request Feature](#)
+[Live Demo](https://smart-password-generator-red.vercel.app/) • [Report Bug](#) • [Request Feature](#)
 
 </div>
 
